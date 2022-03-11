@@ -1,0 +1,231 @@
+(1x1x1)Cube의 크기 = 1유닛 = 보통 1미터로 사용
+
+---------- Time : 게임 내 시간 관련 ----------
+
+컴퓨터 사양에 따라 FPS가 다르므로,
+
+Time.deltaTime로 1FPS 사용
+
+---------- gameObject : 컴포넌트 입장에서 자신이 추가된 게임 오브젝트를 가리키는 변수----------
+
+컴포넌트들의 기반 클래스인 MonoBehavior에서 제공
+
+---------- SetActive method  : 오브젝트를 활성화/비활성화 ----------
+
+오브젝트명.SetActive(bool value);
+
+---------- Input class : 사용자의 입력을 감지하는 메서드를 모아놓음 ----------
+
+KeyCode 식별자로 그에 대응해놓은 정수 사용
+-> 다 외울 수 없으므로 KeyName 사용
+
+Input.GetButtonDown(KeyCode key);
+버튼을 누를 때 한번 True 반환
+키 설정 등에서 맵핑되는 키를 바꿀 때마다 코드를 변경할 순 없으므로 동작에 대응되는 "키 이름" 사용
+-> 입력매니저 참조
+
+Input.GetButtonDown(KeyCode.R);
+Input.GetButtonDown(KeyCode.DownArrow); // Arrow : 화살 -> 화살표
+
+Input.GetButtonUp(KeyCode key);
+버튼을 눌렀다가 뗐을 때 True 반환
+
+float Input.GetAxis(string axisName); // Axis : 축
+설정된 축을 기준으로 +/- 입력 값 반환
+반환 값 bool이 아닌 수치 -> 조이스틱 등에서 약하게/강하게 밀기 등이 있으므로
+
+Input.GetAxis("Horizontal");
+가로 축 기준
+Input.GetAxis("Vertical");
+세로 축 기준
+
+입력 매니저
+Edit > Project Settings
+기본적으로 맵핑되어있는 키들
+"Horizontal"/"Vertical" 또한 기본적으로 맵핑 되어있음
+
+
+---------- RigidBody : GameObject가 물리 제어로 동작하게 만듦 ----------
+
+Position, Rotate Freeze 및 Gravity 해제 가능
+
+반환형 RigidBody 변수명; 
+
+변수명.AddForce(x, y, z);
+물리적인 힘 추가(중첩)
+
+(Rigidbody)변수명.velocity = velocity명 or value; // velocity : 속도
+속도 재 할당
+
+
+---------- GetComponent method : 원하는 타입의 컴포넌트를 자신의 오브젝트에서 찾아옴(default = NULL) ----------
+
+<> 제너릭 기법
+여러 타입에 호환되게 함(메서드나 클래스 등)
+
+---------- FindObjectOfType metod : 오브젝트를 찾아옴 ----------
+
+ex)
+target = FindObjectOfType<>().transform;
+
+---------- Vector3 3D 좌표계 ----------
+
+Vector3 변수명 = new Vector3(x, y, z);
+변수.x 변수.y 변수.z 등으로 접근
+벡터3형 변수 선언
+
+클래스가 아닌 구조체타입으로 선언되어있음
+-> 따라서, 참조가 아닌 값타입으로 정의되어있음(구조체가 그러므로)
+따라서, 변수가 값 자체로 동작하여 추후 다른 포인터로 가리키고 값을 바꾸면 모든 포인터 값이 바뀜
+
+v.normalized;
+정규화(방향벡터로 만듦) -> 근삿값이 출력될 수 있음
+벡터가 향하는 방향을 표시 
+벡터는 방향x크기(스칼라)
+
+Vector3.magnitude(a, b);
+벡터의 길이(크기)
+
+Vector3.Dot(a, b);
+닷연산(내적연산)
+두 벡터사이의 벌어진 각도
+한 벡터가 다른 벡터에 투영될 때, 각도가 벌어질 수록 그 길이가 짧아지는 성질을 이용해 구함
+변수가 아닌 함수라 대문자임에 주의
+내적은 두 물체사이의 각도가 얼마만큼 벌어졌는지 파악 가능
+ex) 탱크의 포신, 플레이어가 실제로 이동하는 방향 사이의 각도
+
+v.Cross
+크로스연산(외적연산)
+두 벡터와 이루는 각이 같은 벡터를 구함
+정방향(얼굴)을 구할 때 사용
+면은 무수한 벡터의 집합이므로 응용하여 면의 방향도 구할 수 있음
+
+---------- 쿼터니언 ----------
+
+트랜스폼 컴포넌트의 회전은 비직관적이라는 이유로 벡터3값을 입력받지만 실제로는 쿼터니언 연산을 함
+3차원 좌표계에서 벡터3로 회전시 축의 회전이 다른 축의 회전에도 영향을 끼침 및 짐벌락 현상 발생
+유니티에서는 복잡성을 이유로 쿼터니언 내부 수정은 불허하지만 벡터3를 이용한 쿼터니언 메소드 제공
+
+Quaternion.Euler(Vector3 v);
+회전
+* x,y축을 한번에 회전시키는 것과 x축 회전후 y축 회전하는것은 다름 -> 값도 바뀌며 거의 z축도 회전됨
+
+
+
+
+Quaternion a = Quaternion.Euler(new Vector3(x, y, z));
+Quaternion b = Quaternion.Euler(v);
+Quaternion c = a*b; 가능
+
+쿼터니언은 행렬연산이므로 *사용
+
+---------- Collider : 물리적인 표면 ----------
+
+Trigger Collider 
+is Trigger 체크하면 됨
+다른 물체를 밀어내는 물리적인 표면은 없어 뚫고 지나갈 순 있지만 충돌은 감지
+-> 어떤 기능을 실행하는 방아쇠 용도로 자주 사용
+
+충돌 메소드를 발생시키는 것은 리지드바디이므로, 둘 중 하나는 리지드바디를 가지고 있어야 함
+
+충돌 이벤트 메소드
+충돌 메세지에 대응하는 메소드
+
+OnCollision 계열 : 일반 충돌
+일반적인 콜라이더를 가진 두 게임 오브젝트 충돌 시
+OnCollisionEnter(Collision collision); 충돌한 순간
+OnCollisionStay(Collision collision); 충돌하는 동안
+OnCollisionExit(Collision collision); 충돌 후 분리되는 순간
+
+충돌한 상대방 오브젝트, 충돌 지점, 충돌 표면의 방향 등을 알 수 있음
+
+OnTrigger 계열 : 트리거 충돌
+최소 하나가 트리거 콜라이더일 시l,
+OnTriggerEnter(Collider other); 
+OnTriggerStay(Collider other); 
+OnTriggerExit(Collider other); 
+
+트리거 충돌에는 상세한 충돌 정보가 필요없기 때문에 Collider 타입으로 들어옮
+-> 트리거 충돌은 그대로 통과하므로 반발력, 충돌지점, 충격량 등이 존재하지 않으므로
+
+----------  tag : 오브젝트의 tag ----------
+
+ex) if 변수명.tag == ";
+Collider에서 사용했음
+ 
+---------- Destoy method : 입력한 오브젝트를 파괴 ----------
+
+void Destroy(Object obj);
+
+---------- transform 변수 : 오브젝트의 트랜스폼 컴포넌트로 바로 접근 ----------
+
+Transform 타입의 변수이며 자신의 트랜스폼 컴포넌트(위치, 크기, 회전)를 가리킴
+이미 구현되어 있으므로 겟컴포넌트 메소드로 찾아오는 과정을 거칠 필요가 없음
+
+transform.LookAt();
+정면이 target을 향하도록 회전
+
+transform.Rotate(x, y, z);
+오브젝트를 회전시킴
+deltaTime과 섞어 사용
+
+----------  Random class ----------
+
+Random.Range(spawnRateMin, spawnRateMax);
+사이의 랜덤한 숫자 반환
+
+----------  instantiate method : 오브젝트를 복사한 오브젝트 반환----------
+
+instantiate(원본);
+프리팹 등 인자로 입력
+복제 오브젝트의 위치와 회전이 임의로 결정됨
+
+instantiate(원본, 위치, 회전);
+지정한 transform으로 복제
+
+----------  Canvas 오브젝트 : 모든 UI요소들이 배치 됨(2D) ---------- 
+
+텍스트상자
+Horizontal default : Wrap
+텍스트 상자 overflow시 강제로 줄바꿈
+Vertical default : Turncate
+텍스트 상자 overflow시 넘친 글자를 잘라냄
+
+앵커 프리셋
+UI요소들의 앵커, 피벗, 포지션 조정을 제공하여 배치를 편하게 해주는 설정 모음 창
+
+UI 오브젝트는 일반 오브젝트와 달리 트랜스폼 컴포넌트를 확장한 사각(Rect) 트랜스폼 컴포넌트를 가짐
+
+EventSystem 게임 오브젝트
+이벤트 시스템 컴포넌트를 가진 게임 오브젝트
+UI 오브젝트에 클릭/터치/드래그 등 상호작용을 이벤트 메세지로 전달
+스스로 동작하므로 직접 수정할 일은 거의 없음
+
+---------- PlayerPrefs(플레이어설정) : 간단한 방식으로 value를 로컬(프로그램을 실행 중인 컴퓨터)에 저장 및 호출 ----------
+
+키-값 단위로 로컬에 저장
+
+PlayerPrefs.SetFloat(string key, float value);
+저장
+PlayerPrefs.GetFloat(string key, float value);
+호출
+
+함수명 바꿀 시 int, string 등도 가능 (키 값도 string필요 없을 듯)
+
+---------- 좌표계 ----------
+
+전역공간
+게임월드 기준
+
+오브젝트공간
+오브젝트 자신의 x, y, z축을 방향으로 함
+-> 오브젝트 기준이므로 항상 (0, 0, 0)이고 이동은 오브젝트가 아닌 전체 배경이 움직이는 것으로 표현
+편의를 위해 지역공간에 오브젝트공간이 대입되어있으므로 부모가 없으면 같게 동작하고, 지역+오브젝트를 합쳐 지역공간으로 부름
+
+
+지역공간
+부모기준 자식의 공간
+부모가 없으면 전역과 같음
+-> 트랜스폼 컴포넌트의 위치는 지역공간을 표시한 것이고, 평시에는 부모가 없기 때문에 전역과 같이 동작
+상속해제하면 동일위치 전역공간 트랜스폼 위치/회전/크기로 수치 변경됨
+
